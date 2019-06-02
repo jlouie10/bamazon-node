@@ -1,0 +1,23 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Bamazon is a storefront app that takes in orders from customers and depletes stock from the store's inventory. This is a command line node app that uses MySQL.",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlouie10/bamazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jlouie10/bamazon/issues"
+  },
+  "homepage": "https://github.com/jlouie10/bamazon#readme",
+  "dependencies": {
+    "mysql": "^2.17.1"
+  }
+}

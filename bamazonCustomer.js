@@ -19,8 +19,6 @@ let displayProducts = () => {
     connection.query('SELECT * FROM products', function (err, rows) {
         if (err) throw err;
 
-        console.log(rows);
-
         console.log('ID | Name | Department | Price | Stock')
 
         rows.forEach(element => {

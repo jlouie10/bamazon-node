@@ -16,7 +16,7 @@ connection.connect((err) => {
 
 // Displays all the products in the database
 let displayProducts = () => {
-    connection.query('SELECT * FROM products', function (err, rows) {
+    connection.query('SELECT * FROM products', (err, rows) => {
         if (err) throw err;
 
         console.log('ID | Name | Department | Price | Stock')

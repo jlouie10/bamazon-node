@@ -13,7 +13,7 @@ let connection = mysql.createConnection({
 // Connect to the MySQL server
 connection.connect(err => {
     if (err) throw err;
-    // displayProducts();
+
     start();
 });
 
@@ -52,14 +52,13 @@ let displayProducts = arr => {
     let output;
 
     arr.forEach(element => {
-        data.push(
-            [
-                element.id,
-                element.name,
-                element.department,
-                `$${element.price.toFixed(2)}`,
-                element.quantity
-            ]);
+        data.push([
+            element.id,
+            element.name,
+            element.department,
+            `$${element.price.toFixed(2)}`,
+            element.quantity
+        ]);
     });
 
     output = table.table(data);

@@ -24,8 +24,8 @@ let start = () => {
 
         let products = getProducts(rows);
 
-        displayProducts(rows);
-        promptUser(rows);
+        displayProducts(products);
+        promptUser(products);
     });
 };
 
@@ -53,11 +53,11 @@ let displayProducts = arr => {
 
     arr.forEach(element => {
         data.push([
-            element.item_id,
-            element.product_name,
-            element.department_name,
+            element.id,
+            element.name,
+            element.department,
             `$${element.price.toFixed(2)}`,
-            element.stock_quantity
+            element.quantity
         ]);
     });
 
@@ -90,10 +90,10 @@ let promptUser = products => {
             console.log('_\n');
 
             products.forEach(element => {
-                if (element.item_id === productId) {
+                if (element.id === productId) {
                     productExists = true;
 
-                    if (element.stock_quantity >= productQuantity) {
+                    if (element.quantity >= productQuantity) {
                         fulfillOrder(productId, productQuantity, element.price);
                     }
                     else {

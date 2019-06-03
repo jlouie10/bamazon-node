@@ -50,7 +50,14 @@ let getProducts = connection => {
     connection.query('SELECT * FROM products', (err, rows) => {
         if (err) throw err;
 
-        displayProducts(rows);
+        if ((rows === undefined) ||
+            (rows.length == 0)) {
+            console.log("\nThere are no products in the store's inventory.\n");
+        }
+        else {
+            displayProducts(rows);
+        }
+
         connection.end();
     });
 };
@@ -76,7 +83,19 @@ let displayProducts = arr => {
 
 // Fetch low inventory products from Bamazon database and display in table
 let getInventory = connection => {
-    console.log('getInventory');
+    connection.query('SELECT * FROM products WHERE stock_quantity < 5', (err, rows) => {
+        if (err) throw err;
+
+        if ((rows === undefined) ||
+            (rows.length == 0)) {
+            console.log('\nAll inventory is sufficient.\n');
+        }
+        else {
+            displayProducts(rows);
+        }
+
+        connection.end();
+    });
 };
 
 // Prompt user to add inventory to an item in Bamazon database

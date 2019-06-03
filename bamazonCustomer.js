@@ -22,8 +22,14 @@ let start = () => {
     connection.query('SELECT * FROM products', (err, rows) => {
         if (err) throw err;
 
-        displayProducts(rows);
-        promptUser(rows);
+        if ((rows === undefined) ||
+            (rows.length == 0)) {
+            console.log('\nThere are no products for sale.\n');
+        }
+        else {
+            displayProducts(rows);
+            promptUser(rows);
+        }
     });
 };
 

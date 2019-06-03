@@ -51,8 +51,6 @@ let displayProducts = arr => {
     let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
     let output;
 
-    console.log('_\n');
-
     arr.forEach(element => {
         data.push(
             [
@@ -82,8 +80,6 @@ let promptUser = products => {
             type: 'input',
             message: 'How many would you like to purchase?'
         }];
-
-    // console.log('_\n');
 
     inquirer
         .prompt(questions)

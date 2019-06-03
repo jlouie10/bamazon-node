@@ -77,10 +77,19 @@ let promptUser = products => {
             let productQuantity = parseInt(answer.quantity);
             let productExists = false;
 
+            console.log('_\n');
+
             products.forEach(element => {
                 if (element.id === productId) {
                     productExists = true;
-                    fulfillOrder(productId, productQuantity, element.price);
+
+                    if (element.quantity >= productQuantity) {
+                        fulfillOrder(productId, productQuantity, element.price);
+                    }
+                    else {
+                        console.log('Insufficient quantity!')
+                        connection.end();
+                    }
                 }
             });
 
@@ -100,7 +109,7 @@ let fulfillOrder = (id, quantity, price) => {
 
             let total = quantity * price;
 
-            console.log(`The total cost of your purchase is $${total.toFixed(2)}`);
+            console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 
             connection.end();
         });

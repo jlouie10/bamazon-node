@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const table = require('table');
 
 let connection = mysql.createConnection({
     host: 'localhost',
@@ -47,11 +48,25 @@ let getProducts = arr => {
 
 // Displays all the products in the database
 let displayProducts = arr => {
+    let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
+    let output;
+
     console.log('_\n');
 
     arr.forEach(element => {
-        console.log(`id: ${element.id}, name: ${element.name}, department: ${element.department}, price: $${element.price.toFixed(2)}, quantity: ${element.quantity}`);
+        data.push(
+            [
+                element.id,
+                element.name,
+                element.department,
+                `$${element.price.toFixed(2)}`,
+                element.quantity
+            ]);
     });
+
+    output = table.table(data);
+
+    console.log(output);
 };
 
 // Prompts the user for a product selection
@@ -68,7 +83,7 @@ let promptUser = products => {
             message: 'How many would you like to purchase?'
         }];
 
-    console.log('_\n');
+    // console.log('_\n');
 
     inquirer
         .prompt(questions)

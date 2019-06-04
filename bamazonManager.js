@@ -4,15 +4,7 @@ const table = require('table');
 
 // Prompts the user with a list of options
 let start = () => {
-    let connection = mysql.createConnection({
-        host: 'localhost',
-        port: 8889,
-        user: 'root',
-        password: 'root',
-        database: 'bamazon'
-    });
-
-    let questions = [{
+    let question = [{
         name: 'option',
         type: 'list',
         message: 'Select an option:',
@@ -26,23 +18,39 @@ let start = () => {
 
     console.log('_\n');
 
+    promptUser(question, performAction);
+};
+
+let promptUser = (questions, callback, params) => {
     inquirer
         .prompt(questions)
         .then(answer => {
-            switch (answer.option) {
-                case 'View Products for Sale':
-                    getProducts(connection);
-                    break;
-                case 'View Low Inventory':
-                    getInventory(connection);
-                    break;
-                case 'Add to Inventory':
-                    addInventory(connection);
-                    break;
-                case 'Add New Product':
-                    addProduct(connection);
-            }
+            callback(answer, params);
         });
+};
+
+let performAction = res => {
+    let connection = mysql.createConnection({
+        host: 'localhost',
+        port: 8889,
+        user: 'root',
+        password: 'root',
+        database: 'bamazon'
+    });
+
+    switch (res.option) {
+        case 'View Products for Sale':
+            getProducts(connection);
+            break;
+        case 'View Low Inventory':
+            getInventory(connection);
+            break;
+        case 'Add to Inventory':
+            addInventory(connection);
+            break;
+        case 'Add New Product':
+            addProduct(connection);
+    }
 };
 
 // Fetch products from Bamazon database and display in table
@@ -100,7 +108,37 @@ let getInventory = connection => {
 
 // Prompt user to add inventory to an item in Bamazon database
 let addInventory = connection => {
-    console.log('addInventory');
+    let questions = [
+        {
+            name: 'product',
+            type: 'input',
+            message: 'Enter the ID of the product you wish to add quantity for.'
+        },
+        {
+            name: 'quantity',
+            type: 'input',
+            message: 'How much would you like to add?'
+        }];
+
+    promptUser(questions, updateQuantity, { connection: connection });
+};
+
+let updateQuantity = (res, params) => {
+    params.connection.query(
+        `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE item_id = ${res.product}`,
+        error => {
+            if (error) throw error;
+
+            console.log(`Quantity has been added to inventory.\n`);
+
+            params.connection.query(`SELECT * FROM products WHERE item_id = ${res.product}`,
+                (err, rows) => {
+                    if (err) throw err;
+
+                    displayProducts(rows);
+                    params.connection.end();
+                });
+        });
 };
 
 // Prompt user to add a product to Bamazon database

@@ -59,7 +59,7 @@ let promptUser = products => {
         {
             name: 'product',
             type: 'input',
-            message: 'Please enter the ID of the product you wish to purchase.'
+            message: 'Enter the ID of the product you wish to purchase.'
         },
         {
             name: 'quantity',

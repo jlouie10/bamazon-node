@@ -19,18 +19,19 @@ connection.connect(err => {
 
 // Query the database for products, display products, and prompt user
 let start = () => {
-    connection.query('SELECT * FROM products', (err, rows) => {
-        if (err) throw err;
+    connection.query('SELECT item_id, product_name, department_name, price, stock_quantity FROM products',
+        (err, rows) => {
+            if (err) throw err;
 
-        if ((rows === undefined) ||
-            (rows.length == 0)) {
-            console.log('\nThere are no products for sale.\n');
-        }
-        else {
-            displayProducts(rows);
-            promptUser(rows);
-        }
-    });
+            if ((rows === undefined) ||
+                (rows.length == 0)) {
+                console.log('\nThere are no products for sale.\n');
+            }
+            else {
+                displayProducts(rows);
+                promptUser(rows);
+            }
+        });
 };
 
 // Displays all the products in the database

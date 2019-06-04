@@ -21,6 +21,7 @@ let start = () => {
     promptUser(question, performAction);
 };
 
+// Prompt user questions and run callback function
 let promptUser = (questions, callback, params) => {
     inquirer
         .prompt(questions)
@@ -29,6 +30,7 @@ let promptUser = (questions, callback, params) => {
         });
 };
 
+// After user selects a menu option, perform that action
 let performAction = res => {
     let connection = mysql.createConnection({
         host: 'localhost',
@@ -70,6 +72,7 @@ let getProducts = connection => {
     });
 };
 
+// Display products in a table
 let displayProducts = arr => {
     let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
     let output;
@@ -123,6 +126,7 @@ let addInventory = connection => {
     promptUser(questions, updateQuantity, { connection: connection });
 };
 
+// Updates quantity in database and displays the new quantity
 let updateQuantity = (res, params) => {
     params.connection.query(
         `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE item_id = ${res.product}`,

@@ -115,13 +115,14 @@ let addInventory = connection => {
         {
             name: 'product',
             type: 'input',
-            message: 'Enter the ID of the product you wish to add quantity for.'
+            message: 'What is the ID of the product you wish to add quantity for?'
         },
         {
             name: 'quantity',
             type: 'input',
             message: 'How much would you like to add?'
-        }];
+        }
+    ];
 
     promptUser(questions, updateQuantity, { connection: connection });
 };
@@ -133,21 +134,73 @@ let updateQuantity = (res, params) => {
         error => {
             if (error) throw error;
 
-            console.log(`Quantity has been added to inventory.\n`);
+            console.log('\nQuantity has been added to inventory.\n');
 
             params.connection.query(`SELECT * FROM products WHERE item_id = ${res.product}`,
-                (err, rows) => {
+                (err, row) => {
                     if (err) throw err;
 
-                    displayProducts(rows);
+                    displayProducts(row);
                     params.connection.end();
-                });
-        });
+                }
+            );
+        }
+    );
 };
 
 // Prompt user to add a product to Bamazon database
 let addProduct = connection => {
-    console.log('addProduct');
+    let questions = [
+        {
+            name: 'name',
+            type: 'input',
+            message: 'What is the name of the product you wish to add?'
+        },
+        {
+            name: 'department',
+            type: 'input',
+            message: 'Which department does the product belong to?'
+        },
+        {
+            name: 'price',
+            type: 'input',
+            message: 'What is the unit cost of the product?'
+        },
+        {
+            name: 'quantity',
+            type: 'input',
+            message: 'How many of this product are you adding?'
+        }
+    ];
+
+    promptUser(questions, createProduct, { connection: connection });
+};
+
+// Creates product in database
+let createProduct = (res, params) => {
+    params.connection.query(
+        "INSERT INTO products SET ?",
+        {
+            product_name: res.name,
+            department_name: res.department,
+            price: res.price.replace('$', ''),
+            stock_quantity: res.quantity
+        },
+        error => {
+            if (error) throw error;
+
+            console.log(`\n${res.name} has been added to the store.\n`);
+
+            params.connection.query('SELECT * FROM products ORDER BY item_id DESC LIMIT 1',
+                (err, row) => {
+                    if (err) throw err;
+
+                    displayProducts(row);
+                    params.connection.end();
+                }
+            );
+        }
+    );
 };
 
 start();

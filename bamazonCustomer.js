@@ -59,7 +59,7 @@ let promptUser = products => {
         {
             name: 'product',
             type: 'input',
-            message: 'Enter the ID of the product you wish to purchase.'
+            message: 'What is the ID of the product you wish to purchase?'
         },
         {
             name: 'quantity',
@@ -109,5 +109,6 @@ let fulfillOrder = (id, quantity, price) => {
             console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 
             connection.end();
-        });
+        }
+    );
 };

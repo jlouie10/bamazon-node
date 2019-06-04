@@ -35,6 +35,3 @@ CREATE TABLE departments (
 INSERT INTO departments (`department_name`, `over_head_costs`)
 VALUES ('Kitchen', 10000),
   ('Books', 5000);
-
-ALTER TABLE products
-ADD product_sales DECIMAL(10,2);

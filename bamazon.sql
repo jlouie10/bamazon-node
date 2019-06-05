@@ -37,4 +37,4 @@ VALUES ('Kitchen', 10000),
   ('Books', 5000);
 
 ALTER TABLE products
-ADD product_sales DECIMAL(10,2);
+ADD product_sales DECIMAL(10,2) NOT NULL DEFAULT 0;

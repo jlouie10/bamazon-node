@@ -100,12 +100,12 @@ let promptUser = products => {
 
 // Updates quantity in database and prints total
 let fulfillOrder = (id, quantity, price) => {
+    let total = quantity * price;
+
     connection.query(
-        `UPDATE products SET stock_quantity = stock_quantity - ${quantity} WHERE item_id = ${id}`,
+        `UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE item_id = ${id}`,
         err => {
             if (err) throw err;
-
-            let total = quantity * price;
 
             console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 

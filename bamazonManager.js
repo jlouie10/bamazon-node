@@ -18,7 +18,7 @@ let start = () => {
 
     console.log('_\n');
 
-    promptUser(question, performAction);
+    promptUser(question, router);
 };
 
 // Prompt user questions and run callback function
@@ -31,7 +31,7 @@ let promptUser = (questions, callback, params) => {
 };
 
 // After user selects a menu option, perform that action
-let performAction = res => {
+let router = res => {
     let connection = mysql.createConnection({
         host: 'localhost',
         port: 8889,
@@ -74,7 +74,7 @@ let getProducts = connection => {
 
 // Display products in a table
 let displayProducts = arr => {
-    let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
+    let data = [['ID', 'Name', 'Department', 'Price', 'Quantity', 'Sales']];
     let output;
 
     arr.forEach(element => {
@@ -83,7 +83,8 @@ let displayProducts = arr => {
             element.product_name,
             element.department_name,
             `$${element.price.toFixed(2)}`,
-            element.stock_quantity
+            element.stock_quantity,
+            `$${element.product_sales.toFixed(2)}`
         ]);
     });
 

@@ -19,7 +19,7 @@ connection.connect(err => {
 
 // Query the database for products, display products, and prompt user
 let start = () => {
-    connection.query('SELECT item_id, product_name, department_name, price, stock_quantity FROM products',
+    connection.query('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
         (err, rows) => {
             if (err) throw err;
 

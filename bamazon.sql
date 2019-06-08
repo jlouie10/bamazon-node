@@ -33,8 +33,13 @@ CREATE TABLE departments (
 );
 
 INSERT INTO departments (`department_name`, `over_head_costs`)
-VALUES ('Kitchen', 10000),
-  ('Books', 5000);
+VALUES ('Kitchen', 1000),
+  ('Books', 500);
 
 ALTER TABLE products
 ADD product_sales DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit
+FROM departments
+JOIN products ON departments.department_name = products.department_name
+GROUP BY department_id

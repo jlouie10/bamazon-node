@@ -1,7 +1,6 @@
-const mysql = require('mysql');
+const database = require('../models/database.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
-
 
 // Prompts the user with a list of options
 let start = () => {
@@ -24,34 +23,25 @@ let start = () => {
 
 // After user selects a menu option, perform that action
 let router = res => {
-    let connection = mysql.createConnection({
-        host: 'localhost',
-        port: 8889,
-        user: 'root',
-        password: 'root',
-        database: 'bamazon'
-    });
 
     switch (res.option) {
         case 'View Products for Sale':
-            getProducts(connection);
+            getProducts();
             break;
         case 'View Low Inventory':
-            getInventory(connection);
+            getInventory();
             break;
         case 'Add to Inventory':
-            addInventory(connection);
+            addInventory();
             break;
         case 'Add New Product':
-            addProduct(connection);
+            addProduct();
     }
 };
 
 // Fetch products from Bamazon database and display in table
-let getProducts = connection => {
-    connection.query('SELECT * FROM products', (err, rows) => {
-        if (err) throw err;
-
+let getProducts = () => {
+    database.get('SELECT * FROM products', rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log("\nThere are no products in the store's inventory.\n");
@@ -60,7 +50,7 @@ let getProducts = connection => {
             displayProducts(rows);
         }
 
-        connection.end();
+        database.endConnection();
     });
 };
 
@@ -73,9 +63,7 @@ let displayProducts = arr => {
 
 // Fetch low inventory products from Bamazon database and display in table
 let getInventory = connection => {
-    connection.query('SELECT * FROM products WHERE stock_quantity < 5', (err, rows) => {
-        if (err) throw err;
-
+    database.get('SELECT * FROM products WHERE stock_quantity < 5', rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log('\nAll inventory is sufficient.\n');
@@ -84,7 +72,7 @@ let getInventory = connection => {
             displayProducts(rows);
         }
 
-        connection.end();
+        database.endConnection();
     });
 };
 
@@ -107,20 +95,16 @@ let addInventory = connection => {
 };
 
 // Updates quantity in database and displays the new quantity
-let updateQuantity = (res, params) => {
-    params.connection.query(
+let updateQuantity = res => {
+    database.update(
         `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE item_id = ${res.product}`,
-        error => {
-            if (error) throw error;
-
+        () => {
             console.log('\nQuantity has been added to inventory.\n');
 
-            params.connection.query(`SELECT * FROM products WHERE item_id = ${res.product}`,
-                (err, row) => {
-                    if (err) throw err;
-
+            database.get(`SELECT * FROM products WHERE item_id = ${res.product}`,
+                row => {
                     displayProducts(row);
-                    params.connection.end();
+                    database.endConnection();
                 }
             );
         }
@@ -156,8 +140,8 @@ let addProduct = connection => {
 };
 
 // Creates product in database
-let createProduct = (res, params) => {
-    params.connection.query(
+let createProduct = res => {
+    database.createRow(
         "INSERT INTO products SET ?",
         {
             product_name: res.name,
@@ -165,17 +149,13 @@ let createProduct = (res, params) => {
             price: res.price.replace('$', ''),
             stock_quantity: res.quantity
         },
-        error => {
-            if (error) throw error;
-
+        () => {
             console.log(`\n${res.name} has been added to the store.\n`);
 
-            params.connection.query('SELECT * FROM products ORDER BY item_id DESC LIMIT 1',
-                (err, row) => {
-                    if (err) throw err;
-
+            database.get('SELECT * FROM products ORDER BY item_id DESC LIMIT 1',
+                row => {
                     displayProducts(row);
-                    params.connection.end();
+                    database.endConnection();
                 }
             );
         }

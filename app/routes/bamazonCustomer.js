@@ -1,39 +1,19 @@
-const mysql = require('mysql');
+const database = require('../models/database.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
-let connection = mysql.createConnection({
-    host: 'localhost',
-    port: 8889,
-    user: 'root',
-    password: 'root',
-    database: 'bamazon'
-});
-
-// Connect to the MySQL server
-connection.connect(err => {
-    if (err) throw err;
-
-    start();
-});
-
 // Query the database for products, display products, and prompt user
-let start = () => {
-    connection.query('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
-        (err, rows) => {
-            if (err) throw err;
+let start = (rows) => {
+    if ((rows === undefined) ||
+        (rows.length == 0)) {
+        console.log('\nThere are no products for sale.\n');
+    }
+    else {
+        let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
 
-            if ((rows === undefined) ||
-                (rows.length == 0)) {
-                console.log('\nThere are no products for sale.\n');
-            }
-            else {
-                let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
-
-                display.table(rows, data);
-                purchaseProduct(rows);
-            }
-        });
+        display.table(rows, data);
+        purchaseProduct(rows);
+    }
 };
 
 // Prompts the user for a product selection
@@ -66,14 +46,14 @@ let purchaseProduct = products => {
                 }
                 else {
                     console.log('Insufficient quantity!')
-                    connection.end();
+                    database.endConnection();
                 }
             }
         });
 
         if (productExists === false) {
             console.log('Product ID not found.')
-            connection.end();
+            database.endConnection();
         }
     });
 };
@@ -82,14 +62,14 @@ let purchaseProduct = products => {
 let fulfillOrder = (id, quantity, price) => {
     let total = quantity * price;
 
-    connection.query(
-        `UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE item_id = ${id}`,
-        err => {
-            if (err) throw err;
-
+    database.update(`UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE item_id = ${id}`,
+        () => {
             console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 
-            connection.end();
+            database.endConnection();
         }
     );
 };
+
+database.get('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
+    start);

@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const database = require('../models/database.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
@@ -21,29 +21,19 @@ let start = () => {
 
 // After user selects a menu option, perform that action
 let router = res => {
-    let connection = mysql.createConnection({
-        host: 'localhost',
-        port: 8889,
-        user: 'root',
-        password: 'root',
-        database: 'bamazon'
-    });
-
     switch (res.option) {
         case 'View Product Sales by Department':
-            viewSales(connection);
+            viewSales();
             break;
         case 'Create New Department':
-            addDepartment(connection);
+            addDepartment();
     }
 };
 
 // Query the Bamazon database for total profit and display in table
-let viewSales = connection => {
-    connection.query('SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit FROM departments JOIN products ON departments.department_name = products.department_name GROUP BY department_id',
-        (err, rows) => {
-            if (err) throw err;
-
+let viewSales = () => {
+    database.get('SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales), (SUM(product_sales) - over_head_costs) FROM departments JOIN products ON departments.department_name = products.department_name GROUP BY department_id',
+        rows => {
             if ((rows === undefined) ||
                 (rows.length == 0)) {
                 console.log('\nAll inventory is sufficient.\n');
@@ -54,12 +44,12 @@ let viewSales = connection => {
                 display.table(rows, data);
             }
 
-            connection.end();
+            database.endConnection();
         });
 };
 
 // Prompt user to add a product to Bamazon database
-let addDepartment = connection => {
+let addDepartment = () => {
     let questions = [
         {
             name: 'department',
@@ -73,12 +63,12 @@ let addDepartment = connection => {
         }
     ];
 
-    prompt.user(questions, createDepartment, { connection: connection });
+    prompt.user(questions, createDepartment);
 };
 
 // Creates department in database
-let createDepartment = (res, params) => {
-    params.connection.query(
+let createDepartment = res => {
+    database.createRow(
         "INSERT INTO departments SET ?",
         {
             department_name: res.department,
@@ -89,7 +79,7 @@ let createDepartment = (res, params) => {
 
             console.log(`\n${res.department} has been added.\n`);
 
-            params.connection.end();
+            database.endConnection();
         }
     );
 };

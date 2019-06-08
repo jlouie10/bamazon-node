@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const inquirer = require('inquirer');
+const prompt = require("./prompt.js");
 const display = require("./display.js");
 
 // Prompts the user with a list of options
@@ -16,16 +16,7 @@ let start = () => {
 
     console.log('_\n');
 
-    promptUser(question, router);
-};
-
-// Prompt user questions and run callback function
-let promptUser = (questions, callback, params) => {
-    inquirer
-        .prompt(questions)
-        .then(answer => {
-            callback(answer, params);
-        });
+    prompt.user(question, router);
 };
 
 // After user selects a menu option, perform that action
@@ -82,7 +73,7 @@ let addDepartment = connection => {
         }
     ];
 
-    promptUser(questions, createDepartment, { connection: connection });
+    prompt.user(questions, createDepartment, { connection: connection });
 };
 
 // Creates department in database

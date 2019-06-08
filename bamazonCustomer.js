@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const inquirer = require('inquirer');
+const prompt = require("./prompt.js");
 const display = require("./display.js");
 
 let connection = mysql.createConnection({
@@ -31,13 +31,13 @@ let start = () => {
                 let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
 
                 display.table(rows, data);
-                promptUser(rows);
+                purchaseProduct(rows);
             }
         });
 };
 
 // Prompts the user for a product selection
-let promptUser = products => {
+let purchaseProduct = products => {
     let questions = [
         {
             name: 'product',
@@ -50,34 +50,32 @@ let promptUser = products => {
             message: 'How many would you like to purchase?'
         }];
 
-    inquirer
-        .prompt(questions)
-        .then(answer => {
-            let productId = parseInt(answer.product);
-            let productQuantity = parseInt(answer.quantity);
-            let productExists = false;
+    prompt.user(questions, answers => {
+        let productId = parseInt(answers.product);
+        let productQuantity = parseInt(answers.quantity);
+        let productExists = false;
 
-            console.log('_\n');
+        console.log('_\n');
 
-            products.forEach(element => {
-                if (element.item_id === productId) {
-                    productExists = true;
+        products.forEach(element => {
+            if (element.item_id === productId) {
+                productExists = true;
 
-                    if (element.stock_quantity >= productQuantity) {
-                        fulfillOrder(productId, productQuantity, element.price);
-                    }
-                    else {
-                        console.log('Insufficient quantity!')
-                        connection.end();
-                    }
+                if (element.stock_quantity >= productQuantity) {
+                    fulfillOrder(productId, productQuantity, element.price);
                 }
-            });
-
-            if (productExists === false) {
-                console.log('Product ID not found.')
-                connection.end();
+                else {
+                    console.log('Insufficient quantity!')
+                    connection.end();
+                }
             }
         });
+
+        if (productExists === false) {
+            console.log('Product ID not found.')
+            connection.end();
+        }
+    });
 };
 
 // Updates quantity in database and prints total

@@ -1,6 +1,7 @@
 const mysql = require('mysql');
-const inquirer = require('inquirer');
+const prompt = require("./prompt.js");
 const display = require("./display.js");
+
 
 // Prompts the user with a list of options
 let start = () => {
@@ -18,16 +19,7 @@ let start = () => {
 
     console.log('_\n');
 
-    promptUser(question, router);
-};
-
-// Prompt user questions and run callback function
-let promptUser = (questions, callback, params) => {
-    inquirer
-        .prompt(questions)
-        .then(answer => {
-            callback(answer, params);
-        });
+    prompt.user(question, router);
 };
 
 // After user selects a menu option, perform that action
@@ -111,7 +103,7 @@ let addInventory = connection => {
         }
     ];
 
-    promptUser(questions, updateQuantity, { connection: connection });
+    prompt.user(questions, updateQuantity, { connection: connection });
 };
 
 // Updates quantity in database and displays the new quantity
@@ -160,7 +152,7 @@ let addProduct = connection => {
         }
     ];
 
-    promptUser(questions, createProduct, { connection: connection });
+    prompt.user(questions, createProduct, { connection: connection });
 };
 
 // Creates product in database

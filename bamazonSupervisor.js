@@ -58,15 +58,15 @@ let viewSales = connection => {
                 console.log('\nAll inventory is sufficient.\n');
             }
             else {
-                displayProducts(rows);
+                displaySales(rows);
             }
 
             connection.end();
         });
 };
 
-// Display products in a table
-let displayProducts = arr => {
+// Display sales in a table
+let displaySales = arr => {
     let data = [['ID', 'Department', 'Costs', 'Total Sales', 'Total Profit']];
     let output;
 

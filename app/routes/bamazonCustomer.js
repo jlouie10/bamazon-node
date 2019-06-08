@@ -1,6 +1,6 @@
 const mysql = require('mysql');
-const prompt = require("./prompt.js");
-const display = require("./display.js");
+const prompt = require("../view/prompt.js");
+const display = require("../view/display.js");
 
 let connection = mysql.createConnection({
     host: 'localhost',

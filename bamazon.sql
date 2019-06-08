@@ -38,3 +38,8 @@ VALUES ('Kitchen', 1000),
 
 ALTER TABLE products
 ADD product_sales DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit
+FROM departments
+JOIN products ON departments.department_name = products.department_name
+GROUP BY department_id

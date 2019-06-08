@@ -1,4 +1,4 @@
 node_modules
 .DS_Store
 Instructions
-data/stash.js
+stash.js

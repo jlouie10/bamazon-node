@@ -36,7 +36,7 @@ The full query in `bamazon.sql` will add products to your store.
 Running this command will display all products for sale in the Bamazon store:
 
 ```
-node bamazonCustomer
+node app/data/bamazonCustomer
 ```
 
 `bamazonCustomer` uses the following query to retrieve a list of products for the customer:
@@ -60,7 +60,7 @@ UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = s
 Running this command will display a menu of options:
 
 ```
-node bamazonManager
+node app/data/bamazonManager
 ```
 
 ![bamazonManager](examples/manager.png)

@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const table = require('table');
+const display = require("./display.js");
 
 // Prompts the user with a list of options
 let start = () => {
@@ -58,31 +58,13 @@ let viewSales = connection => {
                 console.log('\nAll inventory is sufficient.\n');
             }
             else {
-                displaySales(rows);
+                let data = [['ID', 'Department', 'Costs', 'Total Sales', 'Total Profit']];
+
+                display.table(rows, data);
             }
 
             connection.end();
         });
-};
-
-// Display sales in a table
-let displaySales = arr => {
-    let data = [['ID', 'Department', 'Costs', 'Total Sales', 'Total Profit']];
-    let output;
-
-    arr.forEach(element => {
-        data.push([
-            element.department_id,
-            element.department_name,
-            `$${element.over_head_costs.toFixed(2)}`,
-            `$${element.product_sales.toFixed(2)}`,
-            `$${element.total_profit.toFixed(2)}`
-        ]);
-    });
-
-    output = table.table(data);
-
-    console.log(output);
 };
 
 // Prompt user to add a product to Bamazon database

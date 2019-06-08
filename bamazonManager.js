@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const table = require('table');
+const display = require("./display.js");
 
 // Prompts the user with a list of options
 let start = () => {
@@ -75,22 +75,8 @@ let getProducts = connection => {
 // Display products in a table
 let displayProducts = arr => {
     let data = [['ID', 'Name', 'Department', 'Price', 'Quantity', 'Sales']];
-    let output;
 
-    arr.forEach(element => {
-        data.push([
-            element.item_id,
-            element.product_name,
-            element.department_name,
-            `$${element.price.toFixed(2)}`,
-            element.stock_quantity,
-            `$${element.product_sales.toFixed(2)}`
-        ]);
-    });
-
-    output = table.table(data);
-
-    console.log(output);
+    display.table(arr, data);
 };
 
 // Fetch low inventory products from Bamazon database and display in table

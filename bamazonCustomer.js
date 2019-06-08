@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const table = require('table');
+const display = require("./display.js");
 
 let connection = mysql.createConnection({
     host: 'localhost',
@@ -28,30 +28,12 @@ let start = () => {
                 console.log('\nThere are no products for sale.\n');
             }
             else {
-                displayProducts(rows);
+                let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
+
+                display.table(rows, data);
                 promptUser(rows);
             }
         });
-};
-
-// Displays all the products in the database
-let displayProducts = arr => {
-    let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
-    let output;
-
-    arr.forEach(element => {
-        data.push([
-            element.item_id,
-            element.product_name,
-            element.department_name,
-            `$${element.price.toFixed(2)}`,
-            element.stock_quantity
-        ]);
-    });
-
-    output = table.table(data);
-
-    console.log(output);
 };
 
 // Prompts the user for a product selection

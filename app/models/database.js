@@ -40,6 +40,7 @@ let updateDatabase = (str, callback) => {
     });
 };
 
+// Closes connection to database
 let endConnection = () => {
     connection.end();
 };

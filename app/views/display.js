@@ -6,7 +6,11 @@ let displayTable = (arr, data) => {
 
     arr.forEach(element => {
         let row = Object.keys(element).map(key => {
-            if (typeof element[key] === 'number') {
+            if ((key === 'price') ||
+                (key === 'product_sales') ||
+                (key === 'over_head_costs') ||
+                (key === 'total_profit')) {
+
                 let numberStr = '$' + element[key].toFixed(2);
 
                 return numberStr;

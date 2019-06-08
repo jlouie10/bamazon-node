@@ -1,6 +1,6 @@
 const mysql = require('mysql');
-const prompt = require("./prompt.js");
-const display = require("./display.js");
+const prompt = require('../views/prompt.js');
+const display = require('../views/display.js');
 
 // Prompts the user with a list of options
 let start = () => {

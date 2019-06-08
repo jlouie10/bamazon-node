@@ -24,7 +24,7 @@ let promptUser = (questions, callback, params) => {
     inquirer
         .prompt(questions)
         .then(answer => {
-            callback(answer);
+            callback(answer, params);
         });
 };
 
@@ -43,7 +43,7 @@ let router = res => {
             viewSales(connection);
             break;
         case 'Create New Department':
-            createDepartment(connection);
+            addDepartment(connection);
     }
 };
 
@@ -85,9 +85,40 @@ let displayProducts = arr => {
     console.log(output);
 };
 
+// Prompt user to add a product to Bamazon database
+let addDepartment = connection => {
+    let questions = [
+        {
+            name: 'department',
+            type: 'input',
+            message: 'Which department do you wish to add?'
+        },
+        {
+            name: 'over_head_costs',
+            type: 'input',
+            message: 'What are the overhead costs?'
+        }
+    ];
+
+    promptUser(questions, createDepartment, { connection: connection });
+};
+
 // Creates department in database
-let createDepartment = connection => {
-    console.log('Create New Department')
+let createDepartment = (res, params) => {
+    params.connection.query(
+        "INSERT INTO departments SET ?",
+        {
+            department_name: res.department,
+            over_head_costs: res.over_head_costs.replace('$', '')
+        },
+        error => {
+            if (error) throw error;
+
+            console.log(`\n${res.department} has been added.\n`);
+
+            params.connection.end();
+        }
+    );
 };
 
 start();

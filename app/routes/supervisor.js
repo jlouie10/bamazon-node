@@ -72,12 +72,12 @@ let createDepartment = res => {
         "INSERT INTO departments SET ?",
         {
             department_name: res.department,
-            over_head_costs: res.over_head_costs.replace('$', '')
+            over_head_costs: res.over_head_costs.replace('$', '').replace(',', '')
         },
         error => {
             if (error) throw error;
 
-            console.log(`\n${res.department} has been added.\n`);
+            console.log(`\n${res.department} department has been added.\n`);
 
             database.endConnection();
         }

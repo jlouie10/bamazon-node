@@ -146,8 +146,8 @@ let createProduct = res => {
         {
             product_name: res.name,
             department_name: res.department,
-            price: res.price.replace('$', ''),
-            stock_quantity: res.quantity
+            price: res.price.replace('$', '').replace(',', ''),
+            stock_quantity: res.quantity.replace(',', '')
         },
         () => {
             console.log(`\n${res.name} has been added to the store.\n`);

@@ -110,7 +110,7 @@ UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE item
 
 ## Add New Product
 
-Selecting the `Add New Product` option will prompt you, the manager, to enter all the details of the product you would like to create (name, department, price, and quantity). Once you're finished entering the product details, the app will display a table containing the new product and its details.
+Selecting the `Add New Product` option will prompt you, the manager, to enter all the details for the product you would like to create (name, department, price, and quantity). Once you're finished entering the product details, the app will display a table containing the new product and its details.
 
 ![Add New Product](examples/manager_new_product.png)
 
@@ -123,7 +123,45 @@ Selecting the `Add New Product` option will prompt you, the manager, to enter al
             department_name: res.department,
             price: res.price.replace('$', ''),
             stock_quantity: res.quantity
-        });
+        })
+```
+
+## bamazonSupervisor
+
+Running this command will display a menu of options:
+
+```
+node bamazonSupervisor
+```
+
+![bamazonSupervisor](examples/supervisor.png)
+
+## View Product Sales by Department
+
+Selecting the `View Product Sales by Department` option will display all deapartments' product sales, overhead costs, and total profit:
+
+![View Product Sales by Department](examples/supervisor_sales.png)
+
+`bamazonSupervisor` uses the following query to retrieve to join the products and departments table and create product sales and total profit rows for the supervisor:
+
+```
+SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit FROM departments JOIN products ON departments.department_name = products.department_name GROUP BY department_id
+```
+
+## Create New Department
+
+Selecting the `Create New Department` option will prompt you, the supervisor, to enter the name and overhead costs for the department you would like to create:
+
+![Create New Department](examples/supervisor_new_department.png)
+
+`bamazonSupervisor` uses the following query to create a new department in the Bamazon store:
+
+```
+(INSERT INTO departments SET ?",
+        {
+            department_name: res.department,
+            over_head_costs: res.over_head_costs.replace('$', '').replace(',', '')
+        })
 ```
 
 ## Bugs

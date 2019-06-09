@@ -35,8 +35,8 @@ let purchaseProduct = products => {
         }];
 
     prompt.user(questions, answers => {
-        let productId = parseInt(answers.product);
-        let productQuantity = parseInt(answers.quantity);
+        let productId = parseInt(answers.product.replace(',', ''));
+        let productQuantity = parseInt(answers.quantity.replace(',', ''));
         let productExists = false;
 
         console.log('_\n');

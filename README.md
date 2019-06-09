@@ -145,7 +145,7 @@ Selecting the `View Product Sales by Department` option will display all deapart
 `bamazonSupervisor` uses the following query to retrieve to join the products and departments table and create product sales and total profit rows for the supervisor:
 
 ```
-SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit FROM departments JOIN products ON departments.department_name = products.department_name GROUP BY department_id
+'SELECT department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id;
 ```
 
 ## Create New Department

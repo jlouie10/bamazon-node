@@ -11,9 +11,14 @@ let displayTable = (arr, data) => {
                 (key === 'over_head_costs') ||
                 (key === 'total_profit')) {
 
-                let numberStr = '$' + element[key].toFixed(2);
+                let numStr = '$' + element[key].toLocaleString(undefined, { minimumFractionDigits: 2 });
 
-                return numberStr;
+                return numStr;
+            }
+            else if (typeof element[key] === 'number') {
+                let num = element[key].toLocaleString();
+
+                return num;
             }
 
             return element[key];

@@ -32,7 +32,7 @@ let router = res => {
 
 // Query the Bamazon database for total profit and display in table
 let viewSales = () => {
-    database.get('SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) as product_sales, (SUM(product_sales) - over_head_costs) as total_profit FROM departments JOIN products ON departments.department_name = products.department_name GROUP BY department_id',
+    database.get('SELECT department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id',
         rows => {
             if ((rows === undefined) ||
                 (rows.length == 0)) {

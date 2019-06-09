@@ -27,16 +27,23 @@ CREATE TABLE products (
   `stock_quantity` INT NOT NULL,
   PRIMARY KEY (`item_id`)
 );
+
+CREATE TABLE departments (
+  `department_id` INT NOT NULL AUTO_INCREMENT,
+  `department_name` VARCHAR(255) NOT NULL,
+  `over_head_costs` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`department_id`)
+);
 ```
 
-The full query in `bamazon.sql` will add products to your store.
+The full query in `schema.sql` will add products and departments to your store.
 
 ## bamazonCustomer
 
 Running this command will display all products for sale in the Bamazon store:
 
 ```
-node app/routes/bamazonCustomer
+node bamazonCustomer
 ```
 
 `bamazonCustomer` uses the following query to retrieve a list of products for the customer:
@@ -60,7 +67,7 @@ UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = s
 Running this command will display a menu of options:
 
 ```
-node app/routes/bamazonManager
+node bamazonManager
 ```
 
 ![bamazonManager](examples/manager.png)

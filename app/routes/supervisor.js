@@ -84,4 +84,6 @@ let createDepartment = res => {
     );
 };
 
-start();
+module.exports = {
+    start: start
+};

@@ -3,17 +3,21 @@ const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
 // Query the database for products, display products, and prompt user
-let start = (rows) => {
-    if ((rows === undefined) ||
-        (rows.length == 0)) {
-        console.log('\nThere are no products for sale.\n');
-    }
-    else {
-        let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
+let start = () => {
+    database.get('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
+        rows => {
+            if ((rows === undefined) ||
+                (rows.length == 0)) {
+                console.log('\nThere are no products for sale.\n');
+            }
+            else {
+                let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
 
-        display.table(rows, data);
-        purchaseProduct(rows);
-    }
+                display.table(rows, data);
+                purchaseProduct(rows);
+            }
+        }
+    );
 };
 
 // Prompts the user for a product selection
@@ -71,5 +75,6 @@ let fulfillOrder = (id, quantity, price) => {
     );
 };
 
-database.get('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
-    start);
+module.exports = {
+    start: start
+};

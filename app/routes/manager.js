@@ -162,4 +162,6 @@ let createProduct = res => {
     );
 };
 
-start();
+module.exports = {
+    start: start
+};

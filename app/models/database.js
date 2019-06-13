@@ -13,31 +13,14 @@ connection.connect(err => {
     if (err) throw err;
 });
 
-// Fetch database and run callback function
-let getDatabase = (str, callback) => {
-    connection.query(str, (err, rows) => {
-        if (err) throw err;
+// Run database query and execute callback function
+let query = (str, params, callback) => {
+    connection.query(str, params,
+        (err, rows) => {
+            if (err) throw err;
 
-        callback(rows);
-    });
-};
-
-// Create row in database and run callback function
-let createRow = (str, params, callback) => {
-    connection.query(str, params, err => {
-        if (err) throw err;
-
-        callback(err);
-    });
-};
-
-// Update database and run callback function
-let updateDatabase = (str, callback) => {
-    connection.query(str, err => {
-        if (err) throw err;
-
-        callback(err);
-    });
+            callback(rows);
+        });
 };
 
 // Closes connection to database
@@ -46,8 +29,6 @@ let endConnection = () => {
 };
 
 module.exports = {
-    get: getDatabase,
-    createRow: createRow,
-    update: updateDatabase,
+    query: query,
     endConnection: endConnection
 };

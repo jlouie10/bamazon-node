@@ -32,7 +32,9 @@ let router = res => {
 
 // Query the Bamazon database for total profit and display in table
 let viewSales = () => {
-    database.get('SELECT department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id',
+    let queryStr = 'SELECT department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id';
+
+    database.query(queryStr, {},
         rows => {
             if ((rows === undefined) ||
                 (rows.length == 0)) {
@@ -68,12 +70,13 @@ let addDepartment = () => {
 
 // Creates department in database
 let createDepartment = res => {
-    database.createRow(
-        "INSERT INTO departments SET ?",
-        {
-            department_name: res.department,
-            over_head_costs: res.over_head_costs.replace('$', '').replace(',', '')
-        },
+    let queryStr = 'INSERT INTO departments SET ?';
+    let queryParams = {
+        department_name: res.department,
+        over_head_costs: res.over_head_costs.replace('$', '').replace(',', '')
+    };
+
+    database.createRow(queryStr, queryParams,
         error => {
             if (error) throw error;
 

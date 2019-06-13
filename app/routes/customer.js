@@ -4,7 +4,9 @@ const display = require('../views/display.js');
 
 // Query the database for products, display products, and prompt user
 let start = () => {
-    database.get('SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0',
+    let queryStr = 'SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0';
+
+    database.query(queryStr, {},
         rows => {
             if ((rows === undefined) ||
                 (rows.length == 0)) {
@@ -65,8 +67,12 @@ let purchaseProduct = products => {
 // Updates quantity in database and prints total
 let fulfillOrder = (id, quantity, price) => {
     let total = quantity * price;
+    let queryStr = `UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE ?`
+    let queryParams = {
+        item_id: id
+    };
 
-    database.update(`UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE item_id = ${id}`,
+    database.query(queryStr, queryParams,
         () => {
             console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 

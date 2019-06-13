@@ -41,7 +41,9 @@ let router = res => {
 
 // Fetch products from Bamazon database and display in table
 let getProducts = () => {
-    database.get('SELECT * FROM products', rows => {
+    let queryStr = 'SELECT * FROM products';
+
+    database.query(queryStr, {}, rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log("\nThere are no products in the store's inventory.\n");
@@ -62,8 +64,10 @@ let displayProducts = arr => {
 };
 
 // Fetch low inventory products from Bamazon database and display in table
-let getInventory = connection => {
-    database.get('SELECT * FROM products WHERE stock_quantity < 5', rows => {
+let getInventory = () => {
+    let queryStr = 'SELECT * FROM products WHERE stock_quantity < 5';
+
+    database.query(queryStr, {}, rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log('\nAll inventory is sufficient.\n');
@@ -77,7 +81,7 @@ let getInventory = connection => {
 };
 
 // Prompt user to add inventory to an item in Bamazon database
-let addInventory = connection => {
+let addInventory = () => {
     let questions = [
         {
             name: 'product',
@@ -91,17 +95,23 @@ let addInventory = connection => {
         }
     ];
 
-    prompt.user(questions, updateQuantity, { connection: connection });
+    prompt.user(questions, updateQuantity);
 };
 
 // Updates quantity in database and displays the new quantity
 let updateQuantity = res => {
-    database.update(
-        `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE item_id = ${res.product}`,
+    let queryStr = `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE ?`;
+    let queryParams = {
+        item_id: res.product
+    };
+
+    database.query(queryStr, queryParams,
         () => {
+            queryStr = `SELECT * FROM products WHERE ?`;
+
             console.log('\nQuantity has been added to inventory.\n');
 
-            database.get(`SELECT * FROM products WHERE item_id = ${res.product}`,
+            database.query(queryStr, queryParams,
                 row => {
                     displayProducts(row);
                     database.endConnection();
@@ -112,7 +122,7 @@ let updateQuantity = res => {
 };
 
 // Prompt user to add a product to Bamazon database
-let addProduct = connection => {
+let addProduct = () => {
     let questions = [
         {
             name: 'name',
@@ -136,23 +146,26 @@ let addProduct = connection => {
         }
     ];
 
-    prompt.user(questions, createProduct, { connection: connection });
+    prompt.user(questions, createProduct);
 };
 
 // Creates product in database
 let createProduct = res => {
-    database.createRow(
-        "INSERT INTO products SET ?",
-        {
-            product_name: res.name,
-            department_name: res.department,
-            price: res.price.replace('$', '').replace(',', ''),
-            stock_quantity: res.quantity.replace(',', '')
-        },
+    let queryStr = 'INSERT INTO products SET ?';
+    let queryParams = {
+        product_name: res.name,
+        department_name: res.department,
+        price: res.price.replace('$', '').replace(',', ''),
+        stock_quantity: res.quantity.replace(',', '')
+    };
+
+    database.query(queryStr, queryParams,
         () => {
+            queryStr = 'SELECT * FROM products ORDER BY item_id DESC LIMIT 1';
+
             console.log(`\n${res.name} has been added to the store.\n`);
 
-            database.get('SELECT * FROM products ORDER BY item_id DESC LIMIT 1',
+            database.query(queryStr, {},
                 row => {
                     displayProducts(row);
                     database.endConnection();

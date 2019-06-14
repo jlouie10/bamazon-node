@@ -1,6 +1,6 @@
 # bamazon
 
-[![Dependency Status](https://david-dm.org/jlouie10/bamazon.svg)](https://david-dm.org/jlouie10/bamazon)
+[![Dependency Status](https://david-dm.org/jlouie10/bamazon-node.svg)](https://david-dm.org/jlouie10/bamazon-node)
 
 Bamazon is a storefront app that takes in orders from customers and depletes stock from the store's inventory. This is a command line node app that uses MySQL.
 

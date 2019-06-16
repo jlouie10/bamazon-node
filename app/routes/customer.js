@@ -1,25 +1,25 @@
-const database = require('../models/database.js');
+const orm = require('../config/orm.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
 // Query the database for products, display products, and prompt user
 let start = () => {
-    let queryStr = 'SELECT item_id, product_name, department_name, price, stock_quantity FROM products WHERE stock_quantity > 0';
+    let table = 'products';
+    let columns = ['item_id', 'product_name', 'department_name', 'price', 'stock_quantity'];
+    let params = 'stock_quantity > 0';
 
-    database.query(queryStr, {},
-        rows => {
-            if ((rows === undefined) ||
-                (rows.length == 0)) {
-                console.log('\nThere are no products for sale.\n');
-            }
-            else {
-                let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
-
-                display.table(rows, data);
-                purchaseProduct(rows);
-            }
+    orm.selectWhere(table, columns, params, rows => {
+        if ((rows === undefined) ||
+            (rows.length == 0)) {
+            console.log('\nThere are no products for sale.\n');
         }
-    );
+        else {
+            let data = [['ID', 'Name', 'Department', 'Price', 'Quantity']];
+
+            display.table(rows, data);
+            purchaseProduct(rows);
+        }
+    });
 };
 
 // Prompts the user for a product selection
@@ -52,14 +52,14 @@ let purchaseProduct = products => {
                 }
                 else {
                     console.log('Insufficient quantity!')
-                    database.endConnection();
+                    orm.endConnection();
                 }
             }
         });
 
         if (productExists === false) {
             console.log('Product ID not found.')
-            database.endConnection();
+            orm.endConnection();
         }
     });
 };
@@ -67,18 +67,15 @@ let purchaseProduct = products => {
 // Updates quantity in database and prints total
 let fulfillOrder = (id, quantity, price) => {
     let total = quantity * price;
-    let queryStr = `UPDATE products SET product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity} WHERE ?`
-    let queryParams = {
-        item_id: id
-    };
+    let table = 'products';
+    let columns = `product_sales = product_sales + ${total}, stock_quantity = stock_quantity - ${quantity}`;
+    let params = `item_id = ${id}`;
 
-    database.query(queryStr, queryParams,
-        () => {
-            console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
+    orm.update(table, columns, params, () => {
+        console.log(`The total cost of your purchase is $${total.toFixed(2)}.\n`);
 
-            database.endConnection();
-        }
-    );
+        orm.endConnection();
+    });
 };
 
 module.exports = {

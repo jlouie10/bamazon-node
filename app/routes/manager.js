@@ -1,4 +1,4 @@
-const database = require('../models/database.js');
+const orm = require('../config/orm.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
@@ -41,9 +41,11 @@ let router = res => {
 
 // Fetch products from Bamazon database and display in table
 let getProducts = () => {
-    let queryStr = 'SELECT * FROM products';
+    let table = 'products';
+    let columns = ['item_id', 'product_name', 'department_name', 'price', 'stock_quantity', 'product_sales'];
+    let params = 'stock_quantity >= 0';
 
-    database.query(queryStr, {}, rows => {
+    orm.selectWhere(table, columns, params, rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log("\nThere are no products in the store's inventory.\n");
@@ -52,7 +54,7 @@ let getProducts = () => {
             displayProducts(rows);
         }
 
-        database.endConnection();
+        orm.endConnection();
     });
 };
 
@@ -65,9 +67,11 @@ let displayProducts = arr => {
 
 // Fetch low inventory products from Bamazon database and display in table
 let getInventory = () => {
-    let queryStr = 'SELECT * FROM products WHERE stock_quantity < 5';
+    let table = 'products';
+    let columns = ['item_id', 'product_name', 'department_name', 'price', 'stock_quantity', 'product_sales'];
+    let params = 'stock_quantity < 5';
 
-    database.query(queryStr, {}, rows => {
+    orm.selectWhere(table, columns, params, rows => {
         if ((rows === undefined) ||
             (rows.length == 0)) {
             console.log('\nAll inventory is sufficient.\n');
@@ -76,7 +80,7 @@ let getInventory = () => {
             displayProducts(rows);
         }
 
-        database.endConnection();
+        orm.endConnection();
     });
 };
 
@@ -100,25 +104,20 @@ let addInventory = () => {
 
 // Updates quantity in database and displays the new quantity
 let updateQuantity = res => {
-    let queryStr = `UPDATE products SET stock_quantity = stock_quantity + ${res.quantity} WHERE ?`;
-    let queryParams = {
-        item_id: res.product
-    };
+    let table = 'products';
+    let columns = `stock_quantity = stock_quantity + ${res.quantity}`;
+    let params = `item_id = ${res.product}`;
 
-    database.query(queryStr, queryParams,
-        () => {
-            queryStr = `SELECT * FROM products WHERE ?`;
+    orm.update(table, columns, params, () => {
+        columns = ['item_id', 'product_name', 'department_name', 'price', 'stock_quantity', 'product_sales'];
 
-            console.log('\nQuantity has been added to inventory.\n');
+        console.log('\nQuantity has been added to inventory.\n');
 
-            database.query(queryStr, queryParams,
-                row => {
-                    displayProducts(row);
-                    database.endConnection();
-                }
-            );
-        }
-    );
+        orm.selectWhere(table, columns, params, row => {
+            displayProducts(row);
+            orm.endConnection();
+        });
+    });
 };
 
 // Prompt user to add a product to Bamazon database
@@ -151,28 +150,26 @@ let addProduct = () => {
 
 // Creates product in database
 let createProduct = res => {
-    let queryStr = 'INSERT INTO products SET ?';
-    let queryParams = {
+    let table = 'products';
+    let params = {
         product_name: res.name,
         department_name: res.department,
         price: res.price.replace('$', '').replace(',', ''),
         stock_quantity: res.quantity.replace(',', '')
     };
 
-    database.query(queryStr, queryParams,
-        () => {
-            queryStr = 'SELECT * FROM products ORDER BY item_id DESC LIMIT 1';
+    orm.insert(table, params, () => {
+        let table = 'products';
+        let columns = ['item_id', 'product_name', 'department_name', 'price', 'stock_quantity', 'product_sales'];
+        let params = 'item_id';
 
-            console.log(`\n${res.name} has been added to the store.\n`);
+        console.log(`\n${res.name} has been added to the store.\n`);
 
-            database.query(queryStr, {},
-                row => {
-                    displayProducts(row);
-                    database.endConnection();
-                }
-            );
-        }
-    );
+        orm.selectOne(table, columns, params, row => {
+            displayProducts(row);
+            orm.endConnection();
+        });
+    });
 };
 
 module.exports = {

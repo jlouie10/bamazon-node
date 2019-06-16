@@ -1,4 +1,4 @@
-const database = require('../models/database.js');
+const orm = require('../config/orm.js');
 const prompt = require('../views/prompt.js');
 const display = require('../views/display.js');
 
@@ -32,22 +32,29 @@ let router = res => {
 
 // Query the Bamazon database for total profit and display in table
 let viewSales = () => {
-    let queryStr = 'SELECT department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit FROM departments LEFT JOIN products ON departments.department_name = products.department_name GROUP BY department_id';
+    let tables = {
+        first: 'departments',
+        second: 'products'
+    }
+    let columns = `department_id, departments.department_name, over_head_costs, COALESCE(SUM(product_sales), 0) as product_sales, (COALESCE(SUM(product_sales), 0) - over_head_costs) as total_profit `;
+    let params = {
+        first: 'departments.department_name = products.department_name',
+        second: 'department_id'
+    };
 
-    database.query(queryStr, {},
-        rows => {
-            if ((rows === undefined) ||
-                (rows.length == 0)) {
-                console.log('\nAll inventory is sufficient.\n');
-            }
-            else {
-                let data = [['ID', 'Department', 'Costs', 'Total Sales', 'Total Profit']];
+    orm.selectJoin(tables, columns, params, rows => {
+        if ((rows === undefined) ||
+            (rows.length == 0)) {
+            console.log('\nAll inventory is sufficient.\n');
+        }
+        else {
+            let data = [['ID', 'Department', 'Costs', 'Total Sales', 'Total Profit']];
 
-                display.table(rows, data);
-            }
+            display.table(rows, data);
+        }
 
-            database.endConnection();
-        });
+        orm.endConnection();
+    });
 };
 
 // Prompt user to add a product to Bamazon database
@@ -70,21 +77,17 @@ let addDepartment = () => {
 
 // Creates department in database
 let createDepartment = res => {
-    let queryStr = 'INSERT INTO departments SET ?';
-    let queryParams = {
+    let table = 'departments';
+    let params = {
         department_name: res.department,
         over_head_costs: res.over_head_costs.replace('$', '').replace(',', '')
     };
 
-    database.createRow(queryStr, queryParams,
-        error => {
-            if (error) throw error;
+    orm.insert(table, params, () => {
+        console.log(`\n${params.department_name} department has been added.\n`);
 
-            console.log(`\n${res.department} department has been added.\n`);
-
-            database.endConnection();
-        }
-    );
+        orm.endConnection();
+    });
 };
 
 module.exports = {

@@ -10,8 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/jlouie10/bamazon.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "bamazon",
+    "node",
+    "mysql"
+  ],
+  "author": "Justin Louie",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jlouie10/bamazon/issues"
